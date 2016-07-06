@@ -1,19 +1,19 @@
-import json, urllib
+import json, urllib, boto3
 
 print "Beginning Script..."
 
 url = "http://www.carqueryapi.com/api/0.3/?cmd=getMakes"
-
-print "Fetching data from %s" % url
+out_json = {}
+out_file = "cars.json"
+bucket_name = "bugcrowd-infrastructure-interview"
+bucket_key = "coleduclos/cars.json"
 
 # Fetch the json data from the url
+print "Fetching data from %s" % url
 data = urllib.urlopen(url)
 json_data = json.load(data)
 
-out_json = {}
-out_file = "cars.json"
-
-# Loop through the data and add to our out_jsonput JSON
+# Loop through the data and add to our out_json
 for car in json_data['Makes']:
 	make_country =  car['make_country']
 	make_display = car['make_display']
@@ -27,9 +27,16 @@ for car in json_data['Makes']:
 		out_json[make_country]['car_models'].append(make_display)
 		out_json[make_country]['car_count'] = out_json[make_country]['car_count'] + 1
 
+# Loop through each country in out_json and order cars (descending)
 for country in out_json:
-	out_json[country]['car_models'] = sorted(out_json[country]['car_models'],reverse=True) 
+	out_json[country]['car_models'] = sorted(out_json[country]['car_models'], reverse=True) 
 
+# Write the json object to the out_file
 print "Wrting results to %s" % out_file
 fd = open(out_file, 'w')
 fd.write(json.dumps(out_json, indent=4, sort_keys=True))
+
+# Upload to AWS S3 bucket
+print "Uploading results to AWS S3 bucket %s/%s" % (bucket_name, bucket_key)
+#s3 = boto3.resource('s3')
+#s3.Bucket(bucket_name).put_object(Key=bucket_key, Body=json.dumps(out_json, indent=4, sort_keys=True))

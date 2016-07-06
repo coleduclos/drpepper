@@ -16,15 +16,19 @@ out_file = "cars.json"
 # Loop through the data and add to our out_jsonput JSON
 for car in json_data['Makes']:
 	make_country =  car['make_country']
+	make_display = car['make_display']
 
 	# Check if make country already exists in dictionary
 	if make_country not in out_json:
 		out_json[make_country] = {}
-		out_json[make_country]['cars'] = [car]
+		out_json[make_country]['car_models'] = [make_display]
 		out_json[make_country]['car_count'] =  1
 	else:
-		out_json[make_country]['cars'].append(car)
+		out_json[make_country]['car_models'].append(make_display)
 		out_json[make_country]['car_count'] = out_json[make_country]['car_count'] + 1
+
+for country in out_json:
+	out_json[country]['car_models'] = sorted(out_json[country]['car_models'],reverse=True) 
 
 print "Wrting results to %s" % out_file
 fd = open(out_file, 'w')

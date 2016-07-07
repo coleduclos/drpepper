@@ -15,7 +15,7 @@ print "Fetching data from %s" % url
 data = urllib.urlopen(url)
 json_data = json.load(data)
 
-# Loop through the data and add to our out_json
+# Loop through the data and add to out_json
 for car in json_data['Makes']:
 	make_country =  car['make_country']
 	make_display = car['make_display']

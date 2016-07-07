@@ -38,5 +38,5 @@ fd.write(json.dumps(out_json, indent=4, sort_keys=True))
 
 # Upload to AWS S3 bucket
 print "Uploading results to AWS S3 bucket %s/%s" % (bucket_name, bucket_key)
-#s3 = boto3.resource('s3')
-#s3.Bucket(bucket_name).put_object(Key=bucket_key, Body=json.dumps(out_json, indent=4, sort_keys=True))
+s3 = boto3.resource('s3')
+s3.Bucket(bucket_name).put_object(Key=bucket_key, Body=json.dumps(out_json, indent=4, sort_keys=True))

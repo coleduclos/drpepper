@@ -1,19 +1,19 @@
 {
     "Australia": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Holden"
         ]
     }, 
     "Austria": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Steyr"
         ]
     }, 
     "China": {
         "car_count": 3, 
-        "car_models": [
+        "car_model": [
             "Geely", 
             "Brilliance", 
             "Beijing"
@@ -21,20 +21,20 @@
     }, 
     "Czech Republic": {
         "car_count": 2, 
-        "car_models": [
+        "car_model": [
             "Tatra", 
             "Skoda"
         ]
     }, 
     "Denmark": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Zenvo"
         ]
     }, 
     "France": {
         "car_count": 8, 
-        "car_models": [
+        "car_model": [
             "Venturi", 
             "Smart", 
             "Simca", 
@@ -47,7 +47,7 @@
     }, 
     "Germany": {
         "car_count": 16, 
-        "car_models": [
+        "car_model": [
             "Wartburg", 
             "Volkswagen", 
             "Vauxhall", 
@@ -68,14 +68,14 @@
     }, 
     "India": {
         "car_count": 2, 
-        "car_models": [
+        "car_model": [
             "Tata", 
             "Mahindra"
         ]
     }, 
     "Italy": {
         "car_count": 17, 
-        "car_models": [
+        "car_model": [
             "Zagato", 
             "Pininfarina", 
             "Pagani", 
@@ -97,7 +97,7 @@
     }, 
     "Japan": {
         "car_count": 15, 
-        "car_models": [
+        "car_model": [
             "Xedos", 
             "Vector", 
             "Toyota", 
@@ -117,13 +117,13 @@
     }, 
     "Malaysia": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Proton"
         ]
     }, 
     "Netherlands": {
         "car_count": 3, 
-        "car_models": [
+        "car_model": [
             "Spyker", 
             "Donkervoort", 
             "DAF"
@@ -131,13 +131,13 @@
     }, 
     "Romania": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Dacia"
         ]
     }, 
     "Russia": {
         "car_count": 3, 
-        "car_models": [
+        "car_model": [
             "ZIL", 
             "Lada", 
             "GAZ"
@@ -145,13 +145,13 @@
     }, 
     "Serbia": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Zastava"
         ]
     }, 
     "South Korea": {
         "car_count": 5, 
-        "car_models": [
+        "car_model": [
             "SsangYong", 
             "Samsung", 
             "Kia", 
@@ -161,13 +161,13 @@
     }, 
     "Spain": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Seat"
         ]
     }, 
     "Sweden": {
         "car_count": 3, 
-        "car_models": [
+        "car_model": [
             "Volvo", 
             "Saab", 
             "Koenigsegg"
@@ -175,19 +175,19 @@
     }, 
     "Switzerland": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Monteverdi"
         ]
     }, 
     "Taiwan": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "Luxgen"
         ]
     }, 
     "UK": {
         "car_count": 39, 
-        "car_models": [
+        "car_model": [
             "Westfield", 
             "Triumph", 
             "Talbot", 
@@ -231,7 +231,7 @@
     }, 
     "USA": {
         "car_count": 29, 
-        "car_models": [
+        "car_model": [
             "Willys-Overland", 
             "Tesla", 
             "Studebaker", 
@@ -265,7 +265,7 @@
     }, 
     "Ukraine": {
         "car_count": 1, 
-        "car_models": [
+        "car_model": [
             "ZAZ"
         ]
     }

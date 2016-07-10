@@ -33,7 +33,7 @@ Below is the proposed design for Dr Pepper's migration to the cloud. This docume
 ## Technologies to be Used
 ### Amazon Web Services (AWS)
 
-AWS is a public cloud computing platform made of many remote ondemand services addressing customers' needs in compute, stroage, databases, networking, and security. AWS enables sophisticated applications by increasing flexibility, scalability, and reliability. 
+AWS is a public cloud computing platform consisting of many remote ondemand services addressing customers' needs in compute, stroage, databases, networking, and security. AWS enables sophisticated applications by increasing flexibility, scalability, and reliability. 
 
 #### Accounts & Governance
 | Type          | Description |
@@ -45,7 +45,7 @@ AWS is a public cloud computing platform made of many remote ondemand services a
 
 
 #### Reliability
-AWS operates in many regions around the world. Each region is made up of multiple isolated availability zones (AZ). By deploying accross multiple regions and AZs, an application can avoid failures and raise resiliancy. 
+AWS operates in many regions around the world. Each region is made up of multiple isolated availability zones (AZs). By deploying accross multiple regions and AZs, an application can avoid failures and increase resiliancy. 
 
 | Region Code | Region Name |
 | ----------- | ----------- | 
@@ -68,12 +68,13 @@ AWS operates in many regions around the world. Each region is made up of multipl
 | VPC | Virtual Private Cloud - logically isolated network dedicated to an AWS account that you define. This secure virtual network is where you launch AWS resources and can control inbound / outbound traffic. |
 | public subnet  | Block of VPC IP addresses assigned to one AZ meant for internet facing resources such as customer facing webservers. |
 | private subnet | Block of VPC IP addresses assigned to one AZ meant for resources that **do not** need direct internet access such as databases. |
-| Internet Gateway | Highly available component that allows communication between instances in VPC and the internet. | 
-| Route Table | Each VPC has an implicit router. The routetable contains the set of rules used to determine where network traffic is directed. | 
-| NAT Instance | Network Address Translation Instance - used in a public subnet to enable **outbound** internet traffic from instances on private subnet but prevent inbound traffic to that instance. |
 | ELB | Elastic Load Balancer - Automatically routes traffic across multiple healthy instances and AZs while automatically scaling its request handling capacity to meet demands. |
 | Route 53 | Highly available and scalable Domain Name System (DNS) that connects user requests to ELBs |
+| Internet Gateway | Highly available component that allows communication between instances in VPC and the internet. | 
+| Route Table | Each VPC has an implicit router. The routetable contains the set of rules used to determine where network traffic is directed. | 
 | Security Group | Virtual firewall that controls inbound / outbound trafic to instances. |  
+| NAT Instance | Network Address Translation Instance - used in a public subnet to enable **outbound** internet traffic from instances on private subnet but prevent inbound traffic to that instance. |
+
 
 #### Compute
 | Service / Component | Description |
@@ -91,7 +92,7 @@ AWS operates in many regions around the world. Each region is made up of multipl
 #### Logging & Monitoring
 | Service / Component | Description | 
 | ------------------- | ----------- |
-| CloudWatch | Collects and tracks metrics / log files, set alarms, and enables automatically reaction to changes in your AWS resources. |
+| CloudWatch | Collects and tracks metrics / log files, sets alarms, and enables automatically reaction to changes in your AWS resources. |
 | CloudTrail | Records AWS API calls for your account (includes identity of caller, time, source, response, etc.) | 
 
 #### Scalability
@@ -114,7 +115,7 @@ Below is a diagram of the proposed Dr Pepper architecture in AWS:
 ![alt text](https://github.com/coleduclos/drpepper/blob/master/Task_1/images/Dr_Pepper_Arch.png "Proposed Dr Pepper Arch")
 
 ### Regions
-Dr Pepper will utilize both the us-east-1 and us-west-2 region to increase availability.
+Dr Pepper will utilize both the **us-east-1** and **us-west-2** region to increase availability.
 
 | Region Code | Region Name |
 | ----------- | ----------- | 
@@ -145,12 +146,12 @@ AWS has specific NAT AMIs that will be deployed in each of the public subnets al
 
 **WAF**
 
-F5 WAF will be deployed and scaled automatically based on traffic (the scaling will be similar to the Dr Peppers web app) in each of the public subnets. These WAFs will protect and block malicious attempts to compromise Dr Pepper's systems. 
+F5 WAF will be deployed and scaled automatically based on traffic (the scaling will be similar to the Dr Pepper's web app) in each of the public subnets. These WAFs will protect and block malicious attempts to compromise Dr Pepper's systems. 
 
 ### Application Auto Scaling
 In AWS, the Dr Pepper application will be automatically scaled up and down based upon the customers' demands using an Auto Scaling Group. To do so, an AMI with the PHP application installed must be created and referenced in the ASG's launch config. AWS will use CloudWatch to monitor the instances and determine when scaling is needed, automatically attaching the new instances to an ELB.  
 #### AMI
-**PHP server** and **SQLite** (downloaded from S3 bucket) installed ontop of same base OS that is currently being used.
+**PHP application** installed ontop of same base OS that is currently being used.
 
 #### Launch Config
 | Property | Configuration |
@@ -162,18 +163,18 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 #### ELB
 | Property | Configuration |
 | -------- | ------------- |
-| Subnets | app-private-a app-private-b |
+| Subnets | app-private-a, app-private-b |
 | Cross Zone | True |
 | Listeners | LoadBalancerPort 443 -> InstancePort 443 (HTTPS)|
-| HealthCheck | Target = HTTPS:443/ HealthyThreshold = 3 UnhealthyThreshold = 5 Interval 30 Timeout = 5 |
+| HealthCheck | Target = HTTPS:443/, HealthyThreshold = 3, UnhealthyThreshold = 5, Interval = 30, Timeout = 5 |
 
 #### ASG
 | Property | Configuration |
 | -------- | ------------- |
 | Launch Config | Use the same Launch Config as mentioned above |
 | SubnetIds | app-private-a app-private-b |
-| Min Size | 5 (depends on current traffic patterns) |
-| Max Size | 15 (depends on current traffic patterns) |
+| Min Size | 5 (depends on current load patterns) |
+| Max Size | 15 (depends on current load patterns) |
 | Load Balancer | ELB mentioned above |
 | Tags | Name = drpepper-php-app | 
 
@@ -183,8 +184,8 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 | Adjustment Type | Change In Capacity | 
 | Metric Aggregation Type | Average | 
 | Policy Type | Step Scaling | 
-| Step Adjustment 1 | 1. Metric Interval Lower Bound = 0 Metric Interval Upper Bound = 30 Scaling Adjustment = 1 |
-|Step Adjustment 2 | 2. Metric Interval Lower Bound = 30 Metric Interval Upper Bound = Infinity Scaling Adjustment = 2 | 
+| Step Adjustment 1 | 1. Metric Interval Lower Bound = 0, Metric Interval Upper Bound = 30, Scaling Adjustment = 1 |
+|Step Adjustment 2 | 2. Metric Interval Lower Bound = 30, Metric Interval Upper Bound = Infinity, Scaling Adjustment = 2 | 
 
 #### Scale Down Policy
 | Property | Configuration |
@@ -192,7 +193,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 | Adjustment Type | Change In Capacity | 
 | Metric Aggregation Type | Average | 
 | Policy Type | Step Scaling | 
-| Step Adjustment | 1. Metric Interval Lower Bound = 0 Metric Interval Upper Bound = Infinity Scaling Adjustment = -1 | 
+| Step Adjustment | 1. Metric Interval Lower Bound = 0, Metric Interval Upper Bound = Infinity, Scaling Adjustment = -1 | 
 
 
 #### CloudWatch
@@ -228,10 +229,10 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 
 ### Database
 #### SQLite
-Since the assumption was made that the SQLite DB is read-only, it will be stored in an S3 Bucket so can be accessed by all PHP servers without having to worry about backing up, making highly available, etc.
+Since the assumption was made that the SQLite DB is read-only, it will be stored in an S3 Bucket so it can be accessed by all PHP servers without having to worry about backing up, making highly available, etc.
 
 #### Riak
-At least 2 instances of Riak in each private subnet dedicated to DBs. 
+At least 2 EC2 instances of Riak running in each DB dedicated private subnet. 
 #### Data Backup
 Everyday do an EBS snapshot of all Riak nodes running (one at a time).  
 
@@ -256,19 +257,21 @@ The following AMI roles and attached policies will be created to help govern the
 
 # Section 3
 ## Post Migration Suggestions
-Simplify the application and infrastructure to enable to use of AWS **Elastic Beanstalk**. By doing so, AWS will automatically handle the deployment, auto-scaling, load balancing, and monitoring of Dr Pepper's application.
+Simplify the application and infrastructure to enable to use of **AWS Elastic Beanstalk**. By doing so, AWS will automatically handle the deployment, auto-scaling, load balancing, and monitoring of Dr Pepper's application.
 
 ### Application Redesign
-Break down the monolithic application into microservices by: 
+Break down the monolithic application into microservices by:
+
 1. "Strangling" the system - all new features should be architected as microservices.
 2. Using small pieces at a time, begin to break apart the system and rearchitect as microservices.
 3. Run these microservices in Docker containers, managed by AWS EC2 Container Service or Kubernetes.
 
 ### Database
 #### Riak
-Migrate the Raik DBs to Amazon's DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda enabling apps to automatically change due to data changes, can be backed up with S3, and supports both document and key-value data structures.
+Migrate the Riak DBs to Amazon's DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda (enabling apps to automatically change due to data changes), can be backed up with S3, and supports both document and key-value data structures.
+
 #### SQLite 
-If the SQLite DB is **not** read only, it is suggested that the DB be migrated to a RDS like AWS Aurora, MySQL, or MariaDB to ensure the data consistancy, there are no write locks on the DB, etc. 
+If the SQLite DB is **not** read only, it is suggested that the DB be migrated to a RDS like AWS Aurora, MySQL, or MariaDB to ensure data consistancy, avoidance of write locks on the DB, etc. 
 
 ### Logging & Monitoring
 Use AWS Elasticsearch Service to monitor apps in realtime and run log and clickstream analytics. Will require IAM role setup to monitor log data in S3 Bucket. 

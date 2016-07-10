@@ -109,15 +109,22 @@ F5 is a Web Application Firewall (WAF) designed to protect webservers from malic
 * Invaid Input
 
 ## Proposed Architecture Design
+Below is a diagram of the proposed Dr Pepper architecture in AWS:
+
+![alt text](https://github.com/coleduclos/drpepper/blob/master/Task_1/images/Dr_Pepper_Arch.png "Proposed Dr Pepper Arch")
+
 ### Regions
-Dr Pepper will utilize both the us-east-1 and us-west-2 region to increase availability. 
+Dr Pepper will utilize both the us-east-1 and us-west-2 region to increase availability.
+
 | Region Code | Region Name |
 | ----------- | ----------- | 
 | us-east-1 | US East (N. Virginia) | 
 | us-west-2 | US West (Oregon) |
+
 **Note:** If additional regions are needed in the future, the proposed architecture would remain the same in that region(s).
 
 ### Network Design
+The VPC will be architected in such a way that enables customers to access the PHP application from the internet, while protecting the application itself and Dr Pepper's data from hackers. 
 
 #### VPC / Subnets
 * 1 VPC in each region
@@ -141,7 +148,7 @@ AWS has specific NAT AMIs that will be deployed in each of the public subnets al
 F5 WAF will be deployed and scaled automatically based on traffic (the scaling will be similar to the Dr Peppers web app) in each of the public subnets. These WAFs will protect and block malicious attempts to compromise Dr Pepper's systems. 
 
 ### Application Auto Scaling
-
+In AWS, the Dr Pepper application will be automatically scaled up and down based upon the customers' demands using an Auto Scaling Group. To do so, an AMI with the PHP application installed must be created and referenced in the ASG's launch config. AWS will use CloudWatch to monitor the instances and determine when scaling is needed, automatically attaching the new instances to an ELB.  
 #### AMI
 **PHP server** and **SQLite** (downloaded from S3 bucket) installed ontop of same base OS that is currently being used.
 
@@ -190,6 +197,7 @@ F5 WAF will be deployed and scaled automatically based on traffic (the scaling w
 
 #### CloudWatch
 **High CPU Alarm**
+
 | Property | Configuration |
 | -------- | ------------- |
 | Evaluation Periods | 1 |
@@ -203,6 +211,7 @@ F5 WAF will be deployed and scaled automatically based on traffic (the scaling w
 | MetricName | CPUUtilization |
 	
 **Low CPU Alarm**
+
 | Property | Configuration |
 | -------- | ------------- |
 | Evaluation Periods | 1 |
@@ -247,6 +256,8 @@ The following AMI roles and attached policies will be created to help govern the
 
 # Section 3
 ## Post Migration Suggestions
+Simplify the application and infrastructure to enable to use of AWS **Elastic Beanstalk**. By doing so, AWS will automatically handle the deployment, auto-scaling, load balancing, and monitoring of Dr Pepper's application.
+
 ### Application Redesign
 Break down the monolithic application into microservices by: 
 1. "Strangling" the system - all new features should be architected as microservices.
@@ -255,7 +266,7 @@ Break down the monolithic application into microservices by:
 
 ### Database
 #### Riak
-Migrate the Raik DBs to Amazon's fast and flexible DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda enabling apps to automatically change due to data changes, can be backed up with S3, and supports both document and key-value data structures.
+Migrate the Raik DBs to Amazon's DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda enabling apps to automatically change due to data changes, can be backed up with S3, and supports both document and key-value data structures.
 #### SQLite 
 If the SQLite DB is **not** read only, it is suggested that the DB be migrated to a RDS like AWS Aurora, MySQL, or MariaDB to ensure the data consistancy, there are no write locks on the DB, etc. 
 

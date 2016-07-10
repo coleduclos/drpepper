@@ -155,14 +155,14 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 
 #### Launch Config
 | Property | Configuration |
-| -------- | ------------- |
+| :-------- | :------------- |
 | AMI | Use the same AMI as mentioned above |
 | Securtiy Group | Depends on ingress and engress ports needed |
 | Instance Type | Depends on the size of the application |
 
 #### ELB
 | Property | Configuration |
-| -------- | ------------- |
+| :-------- | :------------- |
 | Subnets | app-private-a, app-private-b |
 | Cross Zone | True |
 | Listeners | LoadBalancerPort 443 -> InstancePort 443 (HTTPS)|

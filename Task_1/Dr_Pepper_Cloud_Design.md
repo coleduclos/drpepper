@@ -10,22 +10,22 @@ Below is the proposed design for Dr Pepper's migration to the cloud. This docume
 # Section 1
 ## Current Architecture
 | Technology | Purpose |
-| ---------- | ------- |
+| :--------- | :------ |
 | PHP | Web Application |
 | SQLite | Database |
 | Riak | Database |
 
 ## Requirements
 | Requirement | Description | 
-| ----------- | ----------- |
+| :---------- | :---------- |
 | Internet Facing | Web app is internet facing for customers to access. |
 | High Reliability | Current architecture on Toshiba tablets is causing reliability issues. |
 | High Security | Hackers are trying to access Dr Pepper's secret sauce. If this were to happen, business would collapse. Must protect WebApp and DBs |
 
 ## Assumptions
 | Assumption | Impact |
-| ---------- | ------ | 
-| SQLite is read-only | Can be stored in highly available central location, without having to worry about write locks when clustering application | 
+| :--------- | :----- | 
+| SQLite is **read-only** | Can be stored in highly available central location, without having to worry about write locks when clustering application | 
 
 ---
 
@@ -37,7 +37,7 @@ AWS is a public cloud computing platform consisting of many remote ondemand serv
 
 #### Accounts & Governance
 | Type          | Description |
-| ------------- | ----------- |
+| :------------ | :---------- |
 | AWS Account | Overall account that houses all AWS resources (created once). |
 | IAM Account | Individual logins / user granted access to AWS Account. |
 | IAM Role    | AWS "hat" that a user or resource can wear allowing certain actions to be performed (permissions attached) |
@@ -48,7 +48,7 @@ AWS is a public cloud computing platform consisting of many remote ondemand serv
 AWS operates in many regions around the world. Each region is made up of multiple isolated availability zones (AZs). By deploying accross multiple regions and AZs, an application can avoid failures and increase resiliancy. 
 
 | Region Code | Region Name |
-| ----------- | ----------- | 
+| :---------- | :---------- | 
 | us-east-1 | US East (N. Virginia) | 
 | us-west-2 | US West (Oregon) | 
 | us-west-1 | US West (N. California) |
@@ -64,7 +64,7 @@ AWS operates in many regions around the world. Each region is made up of multipl
 
 #### Networking
 | Service / Component | Description |
-| ------------------- | ----------- |
+| :------------------ | :---------- |
 | VPC | Virtual Private Cloud - logically isolated network dedicated to an AWS account that you define. This secure virtual network is where you launch AWS resources and can control inbound / outbound traffic. |
 | public subnet  | Block of VPC IP addresses assigned to one AZ meant for internet facing resources such as customer facing webservers. |
 | private subnet | Block of VPC IP addresses assigned to one AZ meant for resources that **do not** need direct internet access such as databases. |
@@ -78,26 +78,26 @@ AWS operates in many regions around the world. Each region is made up of multipl
 
 #### Compute
 | Service / Component | Description |
-| ------------------- | ----------- |
+| :------------------ | :---------- |
 | EC2 | Elastic Compute Cloud - easily configurable, scalable, and resizable compute capacity in the cloud. |
 | AMI | Amazon Machine Image - base information required to launch an EC2 instance (including the OS, prebaked software, permissions, etc.). |
 
 #### Storage & Database
 | Service / Component | Description |
-| ------------------- | ----------- |
+| :------------------ | :---------- |
 | S3 | Simple Storage Service - secure and highly-scalable object storage with simple web interface to store / retrieve. |
 | EFS | Elastic File Storage - file storage with automatic capacity adjusment (elastic) and simple interface to create / configure file systems. | 
 | RDS | Relational Database Service - provides inexpensive, easy, scalable, fast, secure, and highly avaialble relational databases in the cloud. |
 
 #### Logging & Monitoring
 | Service / Component | Description | 
-| ------------------- | ----------- |
+| :------------------ | :---------- |
 | CloudWatch | Collects and tracks metrics / log files, sets alarms, and enables automatically reaction to changes in your AWS resources. |
 | CloudTrail | Records AWS API calls for your account (includes identity of caller, time, source, response, etc.) | 
 
 #### Scalability
 | Service / Component | Description | 
-| ------------------- | ----------- |
+| :------------------ | :---------- |
 | ASG	| Auto Scaling Group - maintain application availability and/or scale compute capacity according to demand (conditions you define - measured using CloudWatch). | 
 | Launch Config | Template for ASG to launch EC2 instances (includes AMI, instance type, security group, etc.) | 
 
@@ -118,7 +118,7 @@ Below is a diagram of the proposed Dr Pepper architecture in AWS:
 Dr Pepper will utilize both the **us-east-1** and **us-west-2** region to increase availability.
 
 | Region Code | Region Name |
-| ----------- | ----------- | 
+| :---------- | :---------- | 
 | us-east-1 | US East (N. Virginia) | 
 | us-west-2 | US West (Oregon) |
 
@@ -170,7 +170,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 
 #### ASG
 | Property | Configuration |
-| -------- | ------------- |
+| :------- | :------------ |
 | Launch Config | Use the same Launch Config as mentioned above |
 | SubnetIds | app-private-a app-private-b |
 | Min Size | 5 (depends on current load patterns) |
@@ -180,7 +180,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 
 #### Scale Up Policy
 | Property | Configuration |
-| -------- | ------------- |
+| :------- | :------------ |
 | Adjustment Type | Change In Capacity | 
 | Metric Aggregation Type | Average | 
 | Policy Type | Step Scaling | 
@@ -189,7 +189,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 
 #### Scale Down Policy
 | Property | Configuration |
-| -------- | ------------- |
+| :------- | :------------ |
 | Adjustment Type | Change In Capacity | 
 | Metric Aggregation Type | Average | 
 | Policy Type | Step Scaling | 
@@ -200,7 +200,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 **High CPU Alarm**
 
 | Property | Configuration |
-| -------- | ------------- |
+| :------- | :------------ |
 | Evaluation Periods | 1 |
 | Statistic | Average |
 | Threshhold | 40 |
@@ -214,7 +214,7 @@ In AWS, the Dr Pepper application will be automatically scaled up and down based
 **Low CPU Alarm**
 
 | Property | Configuration |
-| -------- | ------------- |
+| :------- | :------------ |
 | Evaluation Periods | 1 |
 | Statistic | Average |
 | Threshhold | 40 |
@@ -248,7 +248,7 @@ The following logs will be stored in **S3 Bucket(s)**:
 The following AMI roles and attached policies will be created to help govern the AWS Account.
 
 | Role / Policy  | Scope |
-| -------- | ------------- |
+| :------------- | :---- |
 | Admin | Access all services (manage IAM)  |
 | Developer | Access basic compute & storage services: EC2, S3, CloudWatch, CloudFormation, etc. |
 | Network Admin | Access and manage networking services |

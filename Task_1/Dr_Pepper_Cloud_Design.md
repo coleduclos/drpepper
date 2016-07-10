@@ -7,10 +7,15 @@ Below is the proposed design for Dr Pepper's migration to the cloud. This docume
 
 #### Table of Contents
 [Current Architecture](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#current-architecture)
+
 [Requirements](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#requirements)
+
 [Assumptions](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#assumptions)
+
 [Technologies to be Used](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#technologies-to-be-used)
+
 [Proposed Architecture Design](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#proposed-architecture-design)
+
 [Post Migration Suggestions](https://github.com/coleduclos/drpepper/blob/master/Task_1/Dr_Pepper_Cloud_Design.md#post-migration-suggestions)
 
 ---

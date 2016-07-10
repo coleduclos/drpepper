@@ -2,8 +2,8 @@
 Below is the proposed design for Dr Pepper's migration to the cloud. This document is broken into three sections: 
 
 1. Current architecture and requirements for the migration. 
-2. Technologies to be used in the cloud and the architecture design. 
-3. Suggestions for redesign of the application post migration.
+2. Cloud / security technologies to be used and the architecture design. 
+3. Post migration suggestions.
 
 ---
 
@@ -18,14 +18,15 @@ Below is the proposed design for Dr Pepper's migration to the cloud. This docume
 ## Requirements
 | Requirement | Description | 
 | :---------- | :---------- |
-| Internet Facing | Web app is internet facing for customers to access. |
+| Internet Facing | Web app is internet facing. |
 | High Reliability | Current architecture on Toshiba tablets is causing reliability issues. |
-| High Security | Hackers are trying to access Dr Pepper's secret sauce. If this were to happen, business would collapse. Must protect WebApp and DBs |
+| High Security | Hackers are trying to access Dr Pepper's secret sauce. If this were to happen, business would collapse. Must protect systems and data. |
 
 ## Assumptions
 | Assumption | Impact |
 | :--------- | :----- | 
-| SQLite is **read-only** | Can be stored in highly available central location, without having to worry about write locks when clustering application | 
+| SQLite is **read-only** | Can be stored in highly available central location, without having to worry about write locks when clustering application. | 
+| High variance of traffic to application | Application will be dynamically scaled horizontally to meet demands. |
 
 ---
 
@@ -59,8 +60,9 @@ AWS operates in many regions around the world. Each region is made up of multipl
 | ap-southeast-2 | Asia Pacific (Sydney) | 
 | ap-northeast-2 | Asia Pacific (Seoul) | 
 | ap-south-1 | Asia Pacific (Mumbai) | 
-| sa-east-1 | South America (São Paulo) | 
-**Note:** Availability Zones are represented by a region code followed by a letter identifier (eg. us-east-1a). 
+| sa-east-1 | South America (São Paulo) |
+
+**Note:** Availability Zones are represented by a region code followed by a letter identifier (eg. **us-east-1a**). 
 
 #### Networking
 | Service / Component | Description |
@@ -68,9 +70,9 @@ AWS operates in many regions around the world. Each region is made up of multipl
 | VPC | Virtual Private Cloud - logically isolated network dedicated to an AWS account that you define. This secure virtual network is where you launch AWS resources and can control inbound / outbound traffic. |
 | public subnet  | Block of VPC IP addresses assigned to one AZ meant for internet facing resources such as customer facing webservers. |
 | private subnet | Block of VPC IP addresses assigned to one AZ meant for resources that **do not** need direct internet access such as databases. |
-| ELB | Elastic Load Balancer - Automatically routes traffic across multiple healthy instances and AZs while automatically scaling its request handling capacity to meet demands. |
-| Route 53 | Highly available and scalable Domain Name System (DNS) that connects user requests to ELBs |
 | Internet Gateway | Highly available component that allows communication between instances in VPC and the internet. | 
+| ELB | Elastic Load Balancer - automatically routes traffic across multiple healthy instances and AZs while scaling its request handling capacity to meet demands. |
+| Route 53 | Highly available and scalable Domain Name System (DNS) that connects user requests to ELBs |
 | Route Table | Each VPC has an implicit router. The routetable contains the set of rules used to determine where network traffic is directed. | 
 | Security Group | Virtual firewall that controls inbound / outbound trafic to instances. |  
 | NAT Instance | Network Address Translation Instance - used in a public subnet to enable **outbound** internet traffic from instances on private subnet but prevent inbound traffic to that instance. |
@@ -80,7 +82,7 @@ AWS operates in many regions around the world. Each region is made up of multipl
 | Service / Component | Description |
 | :------------------ | :---------- |
 | EC2 | Elastic Compute Cloud - easily configurable, scalable, and resizable compute capacity in the cloud. |
-| AMI | Amazon Machine Image - base information required to launch an EC2 instance (including the OS, prebaked software, permissions, etc.). |
+| AMI | Amazon Machine Image - base information required to launch an EC2 instance (including the OS, pre-baked software, permissions, etc.). |
 
 #### Storage & Database
 | Service / Component | Description |
@@ -98,11 +100,11 @@ AWS operates in many regions around the world. Each region is made up of multipl
 #### Scalability
 | Service / Component | Description | 
 | :------------------ | :---------- |
-| ASG	| Auto Scaling Group - maintain application availability and/or scale compute capacity according to demand (conditions you define - measured using CloudWatch). | 
+| ASG	| Auto Scaling Group - maintain application availability and / or scale compute capacity according to demand (conditions you define - measured using CloudWatch). | 
 | Launch Config | Template for ASG to launch EC2 instances (includes AMI, instance type, security group, etc.) | 
 
 ### F5 WAF
-F5 is a Web Application Firewall (WAF) designed to protect webservers from malicious attacks such as:
+F5 is a Web Application Firewall (WAF) designed to protect web servers from malicious attacks such as:
 * Cross-site scripting
 * SQL Injection
 * Forceful browsing
@@ -149,7 +151,8 @@ AWS has specific NAT AMIs that will be deployed in each of the public subnets al
 F5 WAF will be deployed and scaled automatically based on traffic (the scaling will be similar to the Dr Pepper's web app) in each of the public subnets. These WAFs will protect and block malicious attempts to compromise Dr Pepper's systems. 
 
 ### Application Auto Scaling
-In AWS, the Dr Pepper application will be automatically scaled up and down based upon the customers' demands using an Auto Scaling Group. To do so, an AMI with the PHP application installed must be created and referenced in the ASG's launch config. AWS will use CloudWatch to monitor the instances and determine when scaling is needed, automatically attaching the new instances to an ELB.  
+In AWS, the Dr Pepper application will be automatically scaled up and down based upon the customers' demands using an Auto Scaling Group. To do so, an AMI with the PHP application installed must be created and referenced in the ASG's launch config. AWS will use CloudWatch to monitor the instances and determine when scaling is needed, automatically attaching the new instances to an ELB.
+
 #### AMI
 **PHP application** installed ontop of same base OS that is currently being used.
 
@@ -234,13 +237,13 @@ Since the assumption was made that the SQLite DB is read-only, it will be stored
 #### Riak
 At least 2 EC2 instances of Riak running in each DB dedicated private subnet. 
 #### Data Backup
-Everyday do an EBS snapshot of all Riak nodes running (one at a time).  
+Everyday do an EBS snapshot of all healthy Riak nodes running (one at a time).  
 
 ### Logging & Monitoring
 The following logs will be stored in **S3 Bucket(s)**:
-* AWS CloudTrail
+* CloudTrail
 * CloudWatch
-* AWS ELB Logs
+* ELB Logs
 * EC2 System Logs
 * VPC Flow Logs
 
@@ -263,12 +266,12 @@ Simplify the application and infrastructure to enable to use of **AWS Elastic Be
 Break down the monolithic application into microservices by:
 
 1. "Strangling" the system - all new features should be architected as microservices.
-2. Using small pieces at a time, begin to break apart the system and rearchitect as microservices.
+2. Using small chunks at a time, begin to break apart the legacy system and rearchitect as microservices.
 3. Run these microservices in Docker containers, managed by AWS EC2 Container Service or Kubernetes.
 
 ### Database
 #### Riak
-Migrate the Riak DBs to Amazon's DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda (enabling apps to automatically change due to data changes), can be backed up with S3, and supports both document and key-value data structures.
+Migrate the Riak DBs to Amazon's DynamoDB Service. DynamoDB is fully managed, integrates with AWS Lambda (enabling apps to automatically change due to data changes), backed up with S3, and supports both document and key-value data structures.
 
 #### SQLite 
 If the SQLite DB is **not** read only, it is suggested that the DB be migrated to a RDS like AWS Aurora, MySQL, or MariaDB to ensure data consistancy, avoidance of write locks on the DB, etc. 
